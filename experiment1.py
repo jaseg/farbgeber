@@ -6,7 +6,8 @@ print "zentrale Farbgebeeinheit"
 
 time = 0.0
 baseSaturation = 1.0
-baseLuminance = 0.5
+baseLuminance = 0.4
+modifier = 0.05
 
 # zentraler zeitgeber, sollte immer <3600 und >0 sein und integer raustun
 
@@ -15,14 +16,29 @@ time = float(time)
 
 baseHue = time / 360
 baseColor = Color(hsl=(baseHue, baseSaturation, baseLuminance))
+
+baseColorVar1 = Color(hsl=(baseColor.hue + modifier / 2, baseSaturation, baseLuminance))
+baseColorVar2 = Color(hsl=(baseColor.hue - modifier / 2, baseSaturation, baseLuminance))
+baseColorVar3 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance + modifier))
+baseColorVar4 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance - modifier))
+
 if (baseHue * 360) < 180:
    ContrastHue = (baseHue * 360 + 180)
 elif (baseHue * 360) > 180:
    ContrastHue = (baseHue * 360 - 180)
 ContrastHue = ContrastHue / 360
-baseColorRed = int(baseColor.red * 255)
-baseColorGreen = int(baseColor.green * 255)
-baseColorBlue = int(baseColor.blue * 255)
-ContrastColor = Color(hsl=(ContrastHue, baseSaturation, (baseLuminance + 0.1)))
-print time, baseColor.hex, ContrastColor.hex
+
+ContrastColor = Color(hsl=(ContrastHue, baseSaturation, (baseLuminance + 0.2)))
+
+# Terminaloutput
+
+print time 
+print "baseColor ", baseColor.hex
+print "baseColorVariant1 ", baseColorVar1
+print "baseColorVariant2 ", baseColorVar2
+print "baseColorVariant3 ", baseColorVar3
+print "baseColorVariant4 ", baseColorVar4
+print "ContrastColor ", ContrastColor.hex
+print "###################################"
+
 
