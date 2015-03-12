@@ -8,8 +8,9 @@ print "zentrale Farbgebeeinheit"
 timevalue = 0.0
 baseSaturation = 1.0
 baseLuminance = 0.4
-huemodifier = 0.02
+huemodifier = 0.03
 lummodifier = 0.07
+satmodifier = 0.2
 programmcycles = 0
 
 # zentraler zeitgeber, sollte immer <3600 und >0 sein und integer raustun
@@ -22,8 +23,8 @@ while (programmcycles < 3600):
    baseHue = timevalue / 3600
    baseColor = Color(hsl=(baseHue, baseSaturation, baseLuminance))
 
-   baseColorVar1 = Color(hsl=(baseColor.hue + huemodifier, baseSaturation, baseLuminance))
-   baseColorVar2 = Color(hsl=(baseColor.hue - huemodifier, baseSaturation, baseLuminance))
+   baseColorVar1 = Color(hsl=(baseColor.hue + huemodifier, baseSaturation - satmodifier, baseLuminance))
+   baseColorVar2 = Color(hsl=(baseColor.hue - huemodifier, baseSaturation - satmodifier, baseLuminance))
    baseColorVar3 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance + lummodifier))
    baseColorVar4 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance - lummodifier))
 
@@ -33,7 +34,7 @@ while (programmcycles < 3600):
       ContrastHue = (baseHue * 360 - 180)
    ContrastHue = ContrastHue / 360
 
-   ContrastColor = Color(hsl=(ContrastHue, baseSaturation, (baseLuminance + 0.2)))
+   ContrastColor = Color(hsl=(ContrastHue, baseSaturation - satmodifier, (baseLuminance + 0.2)))
 
 # Terminaloutput
 
@@ -62,9 +63,9 @@ while (programmcycles < 3600):
 
    css1 = "body { background-color:" + baseColor.hex + "; color:" + ContrastColor.hex + "; }"
    css2 = ".baseColorVar1 { background-color:" + baseColorVar1.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css3 = ".baseColorVar2 { background-color:" + baseColorVar2.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
+   css3 = ".baseColorVar2 { background-color:" + baseColorVar2.hex + "; width:50%; height:40px; padding: 40px; font-size:20px; } \n\r"
    css4 = ".baseColorVar3 { background-color:" + baseColorVar3.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css5 = ".baseColorVar4 { background-color:" + baseColorVar4.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
+   css5 = ".baseColorVar4 { background-color:" + baseColorVar4.hex + "; width:50%; height:40px; padding: 40px; font-size:20px; } \n\r"
    css6 = ".Contrastcolor { background-color:" + ContrastColor.hex + "; width:10%; height:900px; position:absolute; right:300px; top:0px; color:" + baseColor.hex + "; padding: 40px; font-size:20px; } \n"
    
    f = open('output1.html','w')
