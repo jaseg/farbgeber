@@ -8,7 +8,8 @@ print "zentrale Farbgebeeinheit"
 timevalue = 0.0
 baseSaturation = 1.0
 baseLuminance = 0.4
-modifier = 0.05
+huemodifier = 0.02
+lummodifier = 0.07
 programmcycles = 0
 
 # zentraler zeitgeber, sollte immer <3600 und >0 sein und integer raustun
@@ -21,10 +22,10 @@ while (programmcycles < 3600):
    baseHue = timevalue / 3600
    baseColor = Color(hsl=(baseHue, baseSaturation, baseLuminance))
 
-   baseColorVar1 = Color(hsl=(baseColor.hue + modifier / 2, baseSaturation, baseLuminance))
-   baseColorVar2 = Color(hsl=(baseColor.hue - modifier / 2, baseSaturation, baseLuminance))
-   baseColorVar3 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance + modifier))
-   baseColorVar4 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance - modifier))
+   baseColorVar1 = Color(hsl=(baseColor.hue + huemodifier, baseSaturation, baseLuminance))
+   baseColorVar2 = Color(hsl=(baseColor.hue - huemodifier, baseSaturation, baseLuminance))
+   baseColorVar3 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance + lummodifier))
+   baseColorVar4 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance - lummodifier))
 
    if (baseHue * 360) < 180:
       ContrastHue = (baseHue * 360 + 180)
