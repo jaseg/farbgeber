@@ -18,7 +18,7 @@ while (programmcycles < 3600):
    timevalue = int(strftime("%M", gmtime())) * 60 + int(strftime("%S", gmtime()))
    timevalue = float(timevalue)
 
-   baseHue = timevalue / 360
+   baseHue = timevalue / 3600
    baseColor = Color(hsl=(baseHue, baseSaturation, baseLuminance))
 
    baseColorVar1 = Color(hsl=(baseColor.hue + modifier / 2, baseSaturation, baseLuminance))
@@ -64,7 +64,7 @@ while (programmcycles < 3600):
    css3 = ".baseColorVar2 { background-color:" + baseColorVar2.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
    css4 = ".baseColorVar3 { background-color:" + baseColorVar3.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
    css5 = ".baseColorVar4 { background-color:" + baseColorVar4.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css6 = ".Contrastcolor { background-color:" + ContrastColor.hex + "; width:10%; height:900px; position:absolute; right:300px; top:0px; color:#ff00a1; padding: 40px; font-size:20px; } \n"
+   css6 = ".Contrastcolor { background-color:" + ContrastColor.hex + "; width:10%; height:900px; position:absolute; right:300px; top:0px; color:" + baseColor.hex + "; padding: 40px; font-size:20px; } \n"
    
    f = open('output1.html','w')
    outputtxt = str(htmlpreface) + str(css1) + str(css2) + str(css3) + str(css4) + str(css5) + str(css6) + str(htmlcontent) + str(zeitzeile) + str(htmlclosing)
