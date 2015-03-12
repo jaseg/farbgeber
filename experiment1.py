@@ -53,15 +53,16 @@ while (programmcycles < 3600):
 <style type="text/css">
 """
    htmlcontent = """</style></head><body><h1>visuelle Ausgabeeinheit des zentralen Farbgebers</h1>
-<div class="baseColorVar1">baseColorVariant1</div>
-<div class="baseColorVar2">baseColorVariant2</div>
-<div class="baseColorVar3">baseColorVariant3</div>
-<div class="baseColorVar4">baseColorVariant4</div>
-<div class="Contrastcolor">Contrastcolor</div>"""
-   zeitzeile = "<h1>Color-Seed " + str(timevalue) + " " + strftime("%H:%M:%S", gmtime()) + "Uhr</h1>"
+<div>BaseColor """ + baseColor.hex + """</div></ br>
+<div class="baseColorVar1">baseColorVariant1 """ + baseColorVar1.hex + """</div>
+<div class="baseColorVar2">baseColorVariant2 """ + baseColorVar2.hex + """</div>
+<div class="baseColorVar3">baseColorVariant3 """ + baseColorVar3.hex + """</div>
+<div class="baseColorVar4">baseColorVariant4 """ + baseColorVar4.hex + """</div>
+<div class="Contrastcolor">Contrastcolor """ + ContrastColor.hex + """</div>"""
+   zeitzeile = "<h3>Color-Seed " + str(timevalue) + " " + strftime("%H:%M:%S", gmtime()) + "Uhr</h3>"
    htmlclosing = """</body></html>"""
 
-   css1 = "body { background-color:" + baseColor.hex + "; color:" + ContrastColor.hex + "; }"
+   css1 = "body { font-size:20px; background-color:" + baseColor.hex + "; color:" + ContrastColor.hex + "; }"
    css2 = ".baseColorVar1 { background-color:" + baseColorVar1.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
    css3 = ".baseColorVar2 { background-color:" + baseColorVar2.hex + "; width:50%; height:40px; padding: 40px; font-size:20px; } \n\r"
    css4 = ".baseColorVar3 { background-color:" + baseColorVar3.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
