@@ -41,4 +41,30 @@ print "baseColorVariant4 ", baseColorVar4
 print "ContrastColor ", ContrastColor.hex
 print "###################################"
 
+# Weboutput
+
+htmlpreface = """<html><head><title>visuelle Ausgabeeinheit des zentralen Farbgebers</title><meta http-equiv="refresh" content="1" />
+<style type="text/css">
+"""
+htmlcontent = """</style></head><body><h1>visuelle Ausgabeeinheit des zentralen Farbgebers</h1>
+<div class="baseColorVar1">baseColorVariant1</div>
+<div class="baseColorVar2">baseColorVariant2</div>
+<div class="baseColorVar3">baseColorVariant3</div>
+<div class="baseColorVar4">baseColorVariant4</div>
+<div class="Contrastcolor">Contrastcolor</div>"""
+time = "<h1>Color-Seed" + str(time) + " " + strftime("%H:%M:%S", gmtime()) + "Uhr</h1>"
+htmlclosing = """</body></html>"""
+
+css1 = "body { background-color:" + baseColor.hex + "; color:" + ContrastColor.hex + "; }"
+css2 = ".baseColorVar1 { background-color:" + baseColorVar1.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
+css3 = ".baseColorVar2 { background-color:" + baseColorVar2.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
+css4 = ".baseColorVar3 { background-color:" + baseColorVar3.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
+css5 = ".baseColorVar4 { background-color:" + baseColorVar4.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
+css6 = ".Contrastcolor { background-color:" + ContrastColor.hex + "; width:10%; height:900px; position:absolute; right:300px; top:0px; color:#ff00a1; padding: 40px; font-size:20px; } \n"
+
+f = open('output1.html','w')
+outputtxt = str(htmlpreface) + str(css1) + str(css2) + str(css3) + str(css4) + str(css5) + str(css6) + str(htmlcontent) + str(time) + str(htmlclosing)
+f.write(outputtxt)
+f.close()
+
 
