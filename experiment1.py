@@ -1,79 +1,52 @@
-#!/usr/bin/python
+#!/usr/bin/env python3
 import time
-from time import gmtime, strftime
-from colour import Color
+import signal
+from colorsys import hls_to_rgb
+import struct
 
-print "zentrale Farbgebeeinheit"
+import paho.mqtt.client as mqtt
 
-timevalue = 0.0
-baseSaturation = 1.0
-baseLuminance = 0.4
-huemodifier = 0.03
-lummodifier = 0.07
-satmodifier = 0.2
-programmcycles = 0
+#MQTT_BROKER = 'c-beam.cbrp3.c-base.org'
+MQTT_BROKER = 'iot.eclipse.org' # test broker
+CLIENTID    = 'farbgeber'
+TOPIC       = 'farbgeber'
+IVL         = 1 # tx interval in whole seconds
 
-# zentraler zeitgeber, sollte immer <3600 und >0 sein und integer raustun
+mc = mqtt.Client(CLIENTID)
+mc.connect(MQTT_BROKER, 1883)
 
-while (programmcycles < 3600):
+# For a simple introduction on color schemes, have a look at
+# > http://printingcode.runemadsen.com/lecture-color/
+bs, bl      = 1.0, 0.4          # base sat, lum
+δh, δs, δl  = 0.03, 0.2, 0.07   # h,s,l modifieres
+δlc         = 0.2               # lum modifier for contrast color
+T           = 3600              # period of color cycle in seconds
 
-   timevalue = int(strftime("%M", gmtime())) * 60 + int(strftime("%S", gmtime()))
-   timevalue = float(timevalue)
+def handle(_signum, _frame):
+    tick = time.time()%T
 
-   baseHue = timevalue / 3600
-   baseColor = Color(hsl=(baseHue, baseSaturation, baseLuminance))
+    # Note that some of the values here might overflow. We allow this since colorsys handles this just fine.
+    bh = tick/T         # base hue
+    ch = bh+0.5         # contrast hue, diametrically opposite to base hue
 
-   baseColorVar1 = Color(hsl=(baseColor.hue + huemodifier, baseSaturation - satmodifier, baseLuminance))
-   baseColorVar2 = Color(hsl=(baseColor.hue - huemodifier, baseSaturation - satmodifier, baseLuminance))
-   baseColorVar3 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance + lummodifier))
-   baseColorVar4 = Color(hsl=(baseColor.hue, baseSaturation, baseLuminance - lummodifier))
+    bc = (bh,    bl,     bs   )
+    cc = (ch,    bl+δlc, bs-δs)
+    v1 = (bh+δh, bl,     bs-δs)
+    v2 = (bh-δh, bl,     bs-δs)
+    v3 = (bh,    bl+δl,  bs   )
+    v4 = (bh,    bl-δl,  bs   )
+    kolors = [bc,cc,v1,v2,v3,v4]
 
-   if (baseHue * 360) < 180:
-      ContrastHue = (baseHue * 360 + 180)
-   elif (baseHue * 360) > 180:
-      ContrastHue = (baseHue * 360 - 180)
-   ContrastHue = ContrastHue / 360
+    msg = [ min(int(k*256), 255) for rgb in ( hls_to_rgb(*hls) for hls in kolors ) for k in rgb ]
+    mc.publish(TOPIC, bytearray(struct.pack('18B', *msg))) # bytearray hack for poor python3-compatibility of paho
+    # TODO Initial accuracy is within one millisecond on my system. If this turns out to drift away over time, perhaps
+    # add some offset correction by re-scheduling the itimer here.
+    # Also, periodicity on loaded machines might be increased using the technique described in
+    # > http://linux.subogero.com/1261/linux-real-time-periodic/
+    # $ chrt -f -p 1 $PYTHON_PID
+    #print(time.time(), tick, kolors)
 
-   ContrastColor = Color(hsl=(ContrastHue, baseSaturation - satmodifier, (baseLuminance + 0.2)))
-
-# Terminaloutput
-
-# print timevalue 
-# print "baseColor ", baseColor.hex
-# print "baseColorVariant1 ", baseColorVar1
-# print "baseColorVariant2 ", baseColorVar2
-# print "baseColorVariant3 ", baseColorVar3
-# print "baseColorVariant4 ", baseColorVar4
-# print "ContrastColor ", ContrastColor.hex
-# print "###################################"
-
-# Weboutput
-
-   htmlpreface = """<html><head><title>visuelle Ausgabeeinheit des zentralen Farbgebers</title><meta http-equiv="refresh" content="1" />
-<style type="text/css">
-"""
-   htmlcontent = """</style></head><body><h1>visuelle Ausgabeeinheit des zentralen Farbgebers</h1>
-<div>BaseColor """ + baseColor.hex + """</div></ br>
-<div class="baseColorVar1">baseColorVariant1 """ + baseColorVar1.hex + """</div>
-<div class="baseColorVar2">baseColorVariant2 """ + baseColorVar2.hex + """</div>
-<div class="baseColorVar3">baseColorVariant3 """ + baseColorVar3.hex + """</div>
-<div class="baseColorVar4">baseColorVariant4 """ + baseColorVar4.hex + """</div>
-<div class="Contrastcolor">Contrastcolor """ + ContrastColor.hex + """</div>"""
-   zeitzeile = "<h3>Color-Seed " + str(timevalue) + " " + strftime("%H:%M:%S", gmtime()) + "Uhr</h3>"
-   htmlclosing = """</body></html>"""
-
-   css1 = "body { font-size:20px; background-color:" + baseColor.hex + "; color:" + ContrastColor.hex + "; }"
-   css2 = ".baseColorVar1 { background-color:" + baseColorVar1.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css3 = ".baseColorVar2 { background-color:" + baseColorVar2.hex + "; width:50%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css4 = ".baseColorVar3 { background-color:" + baseColorVar3.hex + "; width:100%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css5 = ".baseColorVar4 { background-color:" + baseColorVar4.hex + "; width:50%; height:40px; padding: 40px; font-size:20px; } \n\r"
-   css6 = ".Contrastcolor { background-color:" + ContrastColor.hex + "; width:10%; height:900px; position:absolute; right:300px; top:0px; color:" + baseColor.hex + "; padding: 40px; font-size:20px; } \n"
-   
-   f = open('output1.html','w')
-   outputtxt = str(htmlpreface) + str(css1) + str(css2) + str(css3) + str(css4) + str(css5) + str(css6) + str(htmlcontent) + str(zeitzeile) + str(htmlclosing)
-   f.write(outputtxt)
-   f.close()
-
-   programmcycles = programmcycles + 1
-   time.sleep(1)
+signal.signal(signal.SIGALRM, handle)
+signal.setitimer(signal.ITIMER_REAL, IVL-time.time()%IVL, IVL) # offset first call to synchronize with wall second
+mc.loop_forever()
 
